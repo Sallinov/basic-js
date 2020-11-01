@@ -6,7 +6,6 @@ class VigenereCipheringMachine {
     this.alpha = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
   }
   encrypt() {
-    throw new CustomError('Not implemented');
     const message = [...msg.toUpperCase()];
     const keys = [...key.toUpperCase()];
     let pos = 0;

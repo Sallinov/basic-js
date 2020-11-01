@@ -1,7 +1,6 @@
 const CustomError = require("../extensions/custom-error");
 
 module.exports = function getSeason(date) {
-  throw new CustomError('Not implemented');
   switch (typeof date === 'object' ? date.getMonth() : 0) {
 	case 12:
 	case 1:
