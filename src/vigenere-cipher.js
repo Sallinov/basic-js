@@ -1,39 +1,87 @@
 const CustomError = require("../extensions/custom-error");
 
 class VigenereCipheringMachine {
-  constructor(mode = true) {
-    this.mode = mode;
-    this.alpha = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
+  constructor(type) {
+    this.type = type;
   }
-  encrypt() {
-    const message = [...msg.toUpperCase()];
-    const keys = [...key.toUpperCase()];
-    let pos = 0;
-    let result = message.map( el => {
-      if (this.alpha.includes(el)) {
-        let idx = (this.alpha.indexOf(keys[pos]) + this.alpha.indexOf(el)) % this.alpha.length;
-        pos = ++pos % keys.length;
-        return this.alpha[idx];
+  encrypt(message, key) {
+    if (message === undefined || key === undefined) {
+      throw new Error('That\'s not good.');
+    }
+    let arr = [];
+    for (let i = 0; i < message.length; i++) {
+      if (message[i].search(/[^A-Za-z]/) !== -1) {
+        arr.push(i);
       }
-      return el;
-    } );
-    return this.mode ? result.join('') : result.reverse().join('');
-  }    
-  decrypt() {
-    throw new CustomError('Not implemented');
-    const message = [...msg.toUpperCase()];
-    const keys = [...key.toUpperCase()];
-    let pos = 0;
-    let result = message.map( el => {
-      if (this.alpha.includes(el)) {
-        let idx = this.alpha.indexOf(el) - this.alpha.indexOf(keys[pos]);
-        if (idx < 0) idx += this.alpha.length;
-        pos = ++pos % keys.length;
-        return this.alpha[idx];
+    }
+    let messageWithLettersOnly = message.replace(/[^A-Za-z]/g, '');
+    let fullKey = key.padEnd(messageWithLettersOnly.length, key);
+    let messageCode = [];
+    for (let i = 0; i < messageWithLettersOnly.length; i++) {
+      messageCode.push(messageWithLettersOnly.toUpperCase().charCodeAt(i));
+    }
+    let keyCode = [];
+    for (let i = 0; i < fullKey.length; i++) {
+      keyCode.push(fullKey.toUpperCase().charCodeAt(i));
+    }
+    let messageCodedInNumbers = [];
+    for (let i = 0; i < messageCode.length; i++) {
+      if ((messageCode[i] + keyCode[i]) > 26) {
+        messageCodedInNumbers.push((messageCode[i] + keyCode[i]) % 26);
+      } else {
+        messageCodedInNumbers.push(messageCode[i] + keyCode[i]);
       }
-      return el;
-    } );
-    return this.mode ? result.join('') : result.reverse().join('');
+    }
+    let messageCodedInLetters = [];
+    for (let i = 0; i < messageCodedInNumbers.length; i++) {
+      messageCodedInLetters.push(String.fromCodePoint((messageCodedInNumbers[i] + 65)));
+    }
+    for (let i = 0; i < arr.length; i++) {
+      messageCodedInLetters.splice([arr[i]], 0, message[arr[i]]);
+    }
+    this.type === false ? messageCodedInLetters.reverse() : messageCodedInLetters;
+    let finalCodedMessage = messageCodedInLetters.join('');
+    return finalCodedMessage;
+  } 
+  decrypt(message, key) {
+    if (message === undefined || key === undefined) {
+      throw new Error('Coca-cola');
+    }
+    let arr = [];
+    // let message = 'attack at dawn!';
+    for (let i = 0; i < message.length; i++) {
+      if (message[i].search(/[^A-Za-z]/) !== -1) {
+        arr.push(i);
+      }
+    }
+    let messageWithLettersOnly = message.replace(/[^A-Za-z]/g, '');
+    let fullKey = key.padEnd(messageWithLettersOnly.length, key);
+    let messageCode = [];
+    for (let i = 0; i < messageWithLettersOnly.length; i++) {
+      messageCode.push(messageWithLettersOnly.toUpperCase().charCodeAt(i));
+    }
+    let keyCode = [];
+    for (let i = 0; i < fullKey.length; i++) {
+      keyCode.push(fullKey.toUpperCase().charCodeAt(i));
+    }
+    let messageCodedInNumbers = [];
+    for (let i = 0; i < messageCode.length; i++) {
+      if ((messageCode[i] + 26 - keyCode[i]) >= 26) {
+        messageCodedInNumbers.push((messageCode[i] + 26 - keyCode[i]) % 26);
+      } else {
+        messageCodedInNumbers.push(messageCode[i] + 26 - keyCode[i]);
+      }
+    }
+    let messageCodedInLetters = [];
+    for (let i = 0; i < messageCodedInNumbers.length; i++) {
+      messageCodedInLetters.push(String.fromCodePoint((messageCodedInNumbers[i] + 65)));
+    }
+    for (let i = 0; i < arr.length; i++) {
+      messageCodedInLetters.splice([arr[i]], 0, message[arr[i]]);
+    }
+    this.type === false ? messageCodedInLetters.reverse() : messageCodedInLetters;
+    let finalCodedMessage = messageCodedInLetters.join('');
+    return finalCodedMessage;
   }
 }
 
